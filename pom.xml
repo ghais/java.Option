@@ -3,7 +3,7 @@
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.convert.java</groupId>
-  <artifactId>Option</artifactId>
+  <artifactId>option</artifactId>
   <version>1.0</version>
   <name>java.Option</name>
   <description>A java implementaiton scala.Option</description>
