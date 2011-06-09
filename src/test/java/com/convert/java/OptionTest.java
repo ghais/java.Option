@@ -39,7 +39,7 @@ public class OptionTest {
      * 
      */
     @Test
-    public void testNone()
+    public void testNone_1()
             throws Exception {
 
         Option<Object> result = Option.None();
@@ -48,8 +48,25 @@ public class OptionTest {
         try {
             result.get();
             fail("Can't call get on an instance of Option.None");
-        } catch (UnsupportedOperationException e) {
+        } catch (RuntimeException e) {
             // good.
+        }
+    }
+
+    /**
+     * Test the Option.None(Throwable t) function.
+     */
+    @Test
+    public void testNone_2() {
+        Option<Object> result = Option.None(new NumberFormatException());
+
+        assertNotNull(result);
+        try {
+            result.get();
+            fail("Can't call get on an instance of Option.None");
+        } catch (RuntimeException e) {
+            Throwable t = e.getCause();
+            assertTrue(t instanceof NumberFormatException);
         }
     }
 

@@ -50,6 +50,20 @@ public abstract class Option<T> {
     }
 
     /**
+     * An Option factory which returns an instance of {@link None}
+     * 
+     * help reduces the verbosity of type parameterization in java.
+     * 
+     * @param t
+     *            thrown exception.
+     * @param <T>
+     * @return
+     */
+    public static <T> Option<T> None(Throwable t) {
+        return new Option.None<T>(t);
+    }
+
+    /**
      * An Option factory which creates Some<T>(x) if the argument is not null, and None if it is null.
      * 
      * @param <T>
@@ -89,6 +103,7 @@ public abstract class Option<T> {
          * (non-Javadoc)
          * @see com.convert.java.Option#get()
          */
+        @Override
         public T get() {
             return value_;
         }
@@ -143,17 +158,39 @@ public abstract class Option<T> {
      */
     static public final class None<T> extends Option<T> {
 
+        private Throwable t;
+
         /**
          * Construct an instance of this object.
          */
         public None() {
+            t = new UnsupportedOperationException("Cannot resolve value on None");
+        }
+
+        /**
+         * Create an instance of None where this.get() will throw a {@link RuntimeException} caused by t.
+         * 
+         * @param t
+         */
+        public None(Throwable t) {
+            this.t = t;
         }
 
         /**
          * @throws UnsupportedOperationException
          */
+        @Override
         public T get() {
-            throw new UnsupportedOperationException("Cannot resolve value on None");
+            throw new RuntimeException(this.t);
+        }
+
+        /**
+         * Get the exception if any.
+         * 
+         * @return the current throwable t or null.
+         */
+        public Throwable getThrowable() {
+            return this.t;
         }
 
         /*
