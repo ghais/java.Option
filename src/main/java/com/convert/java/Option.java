@@ -18,6 +18,11 @@
  */
 package com.convert.java;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.google.common.base.Function;
+
 /**
  * Represents optional values. Instances of Option are either an instance of Some or the object None.
  * 
@@ -50,6 +55,17 @@ public abstract class Option<T> {
     }
 
     /**
+     * Return an instance of Option.None of type T.
+     * 
+     * @param <T>
+     * @param cls
+     * @return
+     */
+    public static <T> Option<T> None(Class<? extends T> cls) {
+        return new Option.None<T>();
+    }
+
+    /**
      * An Option factory which returns an instance of {@link None}
      * 
      * help reduces the verbosity of type parameterization in java.
@@ -67,15 +83,52 @@ public abstract class Option<T> {
      * An Option factory which creates Some<T>(x) if the argument is not null, and None if it is null.
      * 
      * @param <T>
+     * @param <Y extends T>
      * @param value
      * @return
      */
-    public static <T> Option<T> Some(T value) {
+    public static <T, Y extends T> Option<T> Some(Y value) {
         if (null == value) {
             return Option.None();
         } else {
             return new Option.Some<T>(value);
         }
+    }
+
+    /**
+     * Return all the {@link Some} values.
+     * 
+     * @param <T>
+     * @param ts
+     * @return
+     */
+    public static <T> Collection<T> cat(Iterable<Option<T>> ts) {
+        Collection<T> result = new ArrayList<T>();
+        for (Option<T> t : ts) {
+            if (t instanceof Some) {
+                result.add(t.get());
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Apply the function to all {@link Some} values.
+     * 
+     * @param <F>
+     * @param <T>
+     * @param function
+     * @param values
+     * @return
+     */
+    public static <F, T> Collection<T> map(Function<? super F, ? extends T> function, Iterable<Option<F>> values) {
+        Collection<T> result = new ArrayList<T>();
+        for (Option<F> value : values) {
+            if (value instanceof Some) {
+                result.add(function.apply(value.get()));
+            }
+        }
+        return result;
     }
 
     /**
