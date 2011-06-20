@@ -43,6 +43,20 @@ public abstract class Option<T> {
     abstract public T get();
 
     /**
+     * Check if the instance is some value.
+     * 
+     * @return true if the instance is some value, or false otherwise.
+     */
+    abstract public boolean isSome();
+
+    /**
+     * Return true if the instance is none.
+     * 
+     * @return true if the instance is none and false otherwise.
+     */
+    abstract public boolean isNone();
+
+    /**
      * An Option factory which returns an instance of {@link None}
      * 
      * help reduces the verbosity of type parameterization in java.
@@ -185,19 +199,33 @@ public abstract class Option<T> {
             if (obj == null) {
                 return false;
             }
-            if (!(obj instanceof Some)) {
+            if (!(obj instanceof Option)) {
                 return false;
             }
             @SuppressWarnings("unchecked")
-            Some<T> other = (Some<T>) obj;
-            if (value_ == null) {
-                if (other.value_ != null) {
-                    return false;
-                }
-            } else if (!value_.equals(other.value_)) {
+            Option<T> other = (Option<T>) obj;
+            if (!other.isSome()) {
+                return false;
+            }
+            if (!this.get().equals(other.get())) {
                 return false;
             }
             return true;
+        }
+
+        @Override
+        public String toString() {
+            return value_.toString();
+        }
+
+        @Override
+        public boolean isSome() {
+            return true;
+        }
+
+        @Override
+        public boolean isNone() {
+            return false;
         }
 
     }
@@ -260,19 +288,30 @@ public abstract class Option<T> {
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override
-        public boolean equals(Object other) {
-            if (this == other) {
+        public boolean equals(Object obj) {
+            if (this == obj) {
                 return true;
             }
 
-            if (other == null) {
+            if (obj == null) {
                 return false;
             }
-            if (other instanceof Option.None) {
-                return true;
+            @SuppressWarnings("unchecked")
+            Option<T> other = (Option<T>) obj;
+            if (!other.isNone()) {
+                return false;
             }
+            return true;
+        }
 
+        @Override
+        public boolean isSome() {
             return false;
+        }
+
+        @Override
+        public boolean isNone() {
+            return true;
         }
     }
 

@@ -19,6 +19,7 @@
 package com.convert.java;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -189,6 +190,30 @@ public class OptionTest {
         assertEquals("changed", obj1.string);
         assertEquals(1, obj1.integer);
         assertNotNull(obj1.other);
+    }
+
+    /**
+     * Test that Some.iSome() is true and None.isSome() is false
+     */
+    @Test
+    public void testIsSome() {
+        Option<String> some = Option.Some("some");
+        assertTrue(some.isSome());
+
+        Option<String> none = Option.None();
+        assertFalse(none.isSome());
+    }
+
+    /**
+     * Test that Some.iNone() is false and None.isNone() is true.
+     */
+    @Test
+    public void testIsNone() {
+        Option<String> some = Option.Some("some");
+        assertFalse(some.isNone());
+
+        Option<String> none = Option.None();
+        assertTrue(none.isNone());
     }
 
     /**
