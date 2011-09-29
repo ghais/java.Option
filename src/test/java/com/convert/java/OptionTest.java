@@ -90,7 +90,7 @@ public class OptionTest {
         Option<Object> result = Option.Some(null);
 
         assertNotNull(result);
-        assertTrue(result instanceof Option.None);
+        assertTrue(result.isNone());
     }
 
     /**
@@ -106,7 +106,7 @@ public class OptionTest {
         Option<Integer> result = Option.Some(10);
 
         assertNotNull(result);
-        assertTrue(result instanceof Option.Some);
+        assertTrue(result.isSome());
         assertEquals(new Integer(10), result.get());
     }
 
@@ -214,6 +214,23 @@ public class OptionTest {
 
         Option<String> none = Option.None();
         assertTrue(none.isNone());
+    }
+
+    @Test
+    public void testSomeIterator() {
+        Option<String> some = Option.Some("something");
+        for (String x : some) {
+            assertEquals("something", x);
+        }
+    }
+
+    @Test
+    public void testNoneIterator() {
+        Option<String> some = Option.None();
+        for (@SuppressWarnings("unused")
+        String x : some) {
+            fail("we shouldn't iterate over nothing");
+        }
     }
 
     /**

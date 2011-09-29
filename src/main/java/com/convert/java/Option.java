@@ -20,20 +20,21 @@ package com.convert.java;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import com.google.common.base.Function;
 
 /**
- * Represents optional values. Instances of Option are either an instance of Some or the object None.
+ * Represents optional values. Instances of Option are either an instance of Some or None.
  * 
- * The most idiomatic way to use an Option instance is to treat it as a collection or monad and use map,flatMap, filter,
- * or foreach. See tests for usage and examples.
+ * The most idiomatic way to use an Option instance is to treat it as a collection in a for loop.
  * 
  * @author ghais.
  * 
  * @param <T>
  */
-public abstract class Option<T> {
+public abstract class Option<T> implements Iterable<T> {
 
     /**
      * Returns the option's value.
@@ -55,6 +56,33 @@ public abstract class Option<T> {
      * @return true if the instance is none and false otherwise.
      */
     abstract public boolean isNone();
+
+    /**
+     * Get an iterator.
+     */
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+
+            private boolean hasNext = isSome();
+
+            public boolean hasNext() {
+                return hasNext;
+            }
+
+            public T next() {
+                if (hasNext) {
+                    hasNext = false;
+                    return get();
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
 
     /**
      * An Option factory which returns an instance of {@link None}
@@ -119,7 +147,7 @@ public abstract class Option<T> {
     public static <T> Collection<T> cat(Iterable<Option<T>> ts) {
         Collection<T> result = new ArrayList<T>();
         for (Option<T> t : ts) {
-            if (t instanceof Some) {
+            if (t.isSome()) {
                 result.add(t.get());
             }
         }
@@ -138,7 +166,7 @@ public abstract class Option<T> {
     public static <F, T> Collection<T> map(Function<? super F, ? extends T> function, Iterable<Option<F>> values) {
         Collection<T> result = new ArrayList<T>();
         for (Option<F> value : values) {
-            if (value instanceof Some) {
+            if (value.isSome()) {
                 result.add(function.apply(value.get()));
             }
         }
