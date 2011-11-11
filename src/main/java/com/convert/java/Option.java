@@ -85,6 +85,18 @@ public abstract class Option<T> implements Iterable<T> {
     }
 
     /**
+     * 
+     * @param t
+     * @return
+     */
+    public static <T> Option<T> Option(T t) {
+        if (null == t) {
+            return None();
+        }
+        return Some(t);
+    }
+
+    /**
      * An Option factory which returns an instance of {@link None}
      * 
      * help reduces the verbosity of type parameterization in java.
