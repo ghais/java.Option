@@ -255,7 +255,7 @@ public abstract class Option<T> implements Iterable<T> {
 
         @Override
         public String toString() {
-            return value_.toString();
+            return "Some(" + value_.toString() + ")";
         }
 
         @Override
