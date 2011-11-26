@@ -18,12 +18,10 @@
  */
 package com.convert.java;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import com.google.common.base.Function;
 
 /**
  * Represents optional values. Instances of Option are either an instance of Some or None.
@@ -55,7 +53,9 @@ public abstract class Option<T> implements Iterable<T> {
      * 
      * @return true if the instance is none and false otherwise.
      */
-    abstract public boolean isNone();
+    public boolean isNone() {
+        return !isSome();
+    }
 
     /**
      * Get an iterator.
@@ -85,6 +85,7 @@ public abstract class Option<T> implements Iterable<T> {
     }
 
     /**
+     * Return an instance of None if T is null and Some otherwise.
      * 
      * @param t
      * @return
@@ -104,8 +105,9 @@ public abstract class Option<T> implements Iterable<T> {
      * @param <T>
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static <T> Option<T> None() {
-        return new Option.None<T>();
+        return (Option<T>) None.NONE;
     }
 
     /**
@@ -116,21 +118,7 @@ public abstract class Option<T> implements Iterable<T> {
      * @return
      */
     public static <T> Option<T> None(Class<? extends T> cls) {
-        return new Option.None<T>();
-    }
-
-    /**
-     * An Option factory which returns an instance of {@link None}
-     * 
-     * help reduces the verbosity of type parameterization in java.
-     * 
-     * @param t
-     *            thrown exception.
-     * @param <T>
-     * @return
-     */
-    public static <T> Option<T> None(Throwable t) {
-        return new Option.None<T>(t);
+        return None();
     }
 
     /**
@@ -142,47 +130,7 @@ public abstract class Option<T> implements Iterable<T> {
      * @return
      */
     public static <T, Y extends T> Option<T> Some(Y value) {
-        if (null == value) {
-            return Option.None();
-        } else {
-            return new Option.Some<T>(value);
-        }
-    }
-
-    /**
-     * Return all the {@link Some} values.
-     * 
-     * @param <T>
-     * @param ts
-     * @return
-     */
-    public static <T> Collection<T> cat(Iterable<Option<T>> ts) {
-        Collection<T> result = new ArrayList<T>();
-        for (Option<T> t : ts) {
-            if (t.isSome()) {
-                result.add(t.get());
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Apply the function to all {@link Some} values.
-     * 
-     * @param <F>
-     * @param <T>
-     * @param function
-     * @param values
-     * @return
-     */
-    public static <F, T> Collection<T> map(Function<? super F, ? extends T> function, Iterable<Option<F>> values) {
-        Collection<T> result = new ArrayList<T>();
-        for (Option<F> value : values) {
-            if (value.isSome()) {
-                result.add(function.apply(value.get()));
-            }
-        }
-        return result;
+        return new Option.Some<T>(checkNotNull(value));
     }
 
     /**
@@ -263,11 +211,6 @@ public abstract class Option<T> implements Iterable<T> {
             return true;
         }
 
-        @Override
-        public boolean isNone() {
-            return false;
-        }
-
     }
 
     /**
@@ -277,41 +220,22 @@ public abstract class Option<T> implements Iterable<T> {
      * 
      * @param <T>
      */
-    static public final class None<T> extends Option<T> {
+    static public final class None extends Option<Object> {
 
-        private Throwable t;
+        private static final None NONE = new None();
 
         /**
          * Construct an instance of this object.
          */
-        public None() {
-            t = new UnsupportedOperationException("Cannot resolve value on None");
-        }
-
-        /**
-         * Create an instance of None where this.get() will throw a {@link RuntimeException} caused by t.
-         * 
-         * @param t
-         */
-        public None(Throwable t) {
-            this.t = t;
+        private None() {
         }
 
         /**
          * @throws UnsupportedOperationException
          */
         @Override
-        public T get() {
-            throw new RuntimeException(this.t);
-        }
-
-        /**
-         * Get the exception if any.
-         * 
-         * @return the current throwable t or null.
-         */
-        public Throwable getThrowable() {
-            return this.t;
+        public Object get() {
+            throw new UnsupportedOperationException("Can't call get on None");
         }
 
         /*
@@ -336,8 +260,7 @@ public abstract class Option<T> implements Iterable<T> {
             if (obj == null) {
                 return false;
             }
-            @SuppressWarnings("unchecked")
-            Option<T> other = (Option<T>) obj;
+            Option<?> other = (Option<?>) obj;
             if (!other.isNone()) {
                 return false;
             }
@@ -347,11 +270,6 @@ public abstract class Option<T> implements Iterable<T> {
         @Override
         public boolean isSome() {
             return false;
-        }
-
-        @Override
-        public boolean isNone() {
-            return true;
         }
     }
 

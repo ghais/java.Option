@@ -1,1 +1,6 @@
-An implementation of scala.Option in java.
+java.Option
+============
+
+An immutable object that may contain a non-null reference to another object, or Nothing.
+An instance of Option is either Some value or None.
+It is not meant to replace the maybe or option type of other languages such as haskell or scala.
