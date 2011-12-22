@@ -18,8 +18,6 @@
  */
 package com.convert.java;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -82,6 +80,34 @@ public abstract class Option<T> implements Iterable<T> {
                 throw new UnsupportedOperationException();
             }
         };
+    }
+
+    /**
+     * Returns the contained instance if it is present; defaultValue otherwise.
+     * 
+     * @param defaultValue
+     * @return
+     */
+    public T or(T defaultValue) {
+        if (this.isNone()) {
+            return checkNotNull(defaultValue);
+        }
+
+        return this.get();
+    }
+
+    /**
+     * Returns the contained instance if it is present; otherValue otherwise.
+     * 
+     * @param otherValue
+     * @return
+     */
+    public Option<T> or(Option<T> otherValue) {
+        if (this.isNone()) {
+            return checkNotNull(otherValue);
+        }
+
+        return this;
     }
 
     /**
@@ -273,4 +299,17 @@ public abstract class Option<T> implements Iterable<T> {
         }
     }
 
+    /**
+     * @return
+     */
+    public T orNull() {
+        return this.isSome() ? this.get() : null;
+    }
+
+    private static <Y> Y checkNotNull(Y y) {
+        if (null == y) {
+            throw new NullPointerException();
+        }
+        return y;
+    }
 }
